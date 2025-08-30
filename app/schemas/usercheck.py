@@ -1,34 +1,47 @@
-from pydantic import BaseModel,EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 
 class UserBase(BaseModel):
-    """用户基础模型，包含公共字段"""
-    username: str = Field(..., max_length=50, description="用户名")
-    email: EmailStr
-    role: Optional[str] = Field("user", pattern="^(user|admin)$", description="用户角色，只能是user或admin")
+    """用户基本信息模型"""
+    username: str = Field(..., min_length=3, max_length=50, description="用户名")
+    email: EmailStr = Field(..., description="邮箱地址")
+    role: str = Field("user", pattern="^(admin|user)$", description="角色：admin/user")
 
 class UserCreate(UserBase):
-    """创建用户时使用的模型，包含密码"""
-    password: str = Field(..., min_length=6, description="用户密码，至少6个字符")
+    """创建用户请求模型"""
+    password: str = Field(..., min_length=6, description="密码（至少6位）")
 
 class UserUpdate(BaseModel):
-    """更新用户时使用的模型，所有字段都是可选的"""
-    username: Optional[str] = Field(None, max_length=50, description="新用户名")
-    email: EmailStr
-    password: Optional[str] = Field(None, min_length=6, description="新密码，至少6个字符")
-    role: Optional[str] = Field(None, pattern="^(user|admin)$", description="新角色，只能是user或admin")
+    """更新用户请求模型"""
+    user_id: int = Field(..., description="用户ID")
+    username: Optional[str] = Field(None, min_length=3, max_length=50, description="用户名")
+    email: Optional[EmailStr] = Field(None, description="邮箱地址")
+    password: Optional[str] = Field(None, min_length=6, description="密码（至少6位）")
+    role: Optional[str] = Field(None, pattern="^(admin|user)$", description="角色：admin/user")
 
-class UserInDBBase(UserBase):
-    """数据库中用户的基础模型，包含ID"""
+class UserQuery(BaseModel):
+    """用户列表查询模型"""
+    skip: int = Field(0, ge=0, description="跳过的记录数")
+    limit: int = Field(100, ge=1, le=500, description="每页记录数（1-500）")
+
+class UserGet(BaseModel):
+    """获取单个用户请求模型"""
+    user_id: int = Field(..., gt=0, description="用户ID")
+
+class UserDelete(BaseModel):
+    """删除用户请求模型"""
+    user_id: int = Field(..., gt=0, description="用户ID")
+
+class LoginRequest(BaseModel):
+    """登录请求模型"""
+    username: str = Field(..., description="用户名")
+    password: str = Field(..., description="密码")
+
+class User(UserBase):
+    """用户响应模型"""
     id: int
+    is_active: bool
+    created_at: Optional[str]
 
     class Config:
         orm_mode = True
-
-class User(UserInDBBase):
-    """返回给客户端的用户模型"""
-    pass
-
-class UserInDB(UserInDBBase):
-    """数据库中完整的用户模型，包含加密后的密码"""
-    hashed_password: str
