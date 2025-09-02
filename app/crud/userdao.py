@@ -1,9 +1,19 @@
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from app.models.user import User
+from app.schemas.user import UserCreate, UserUpdate
+from passlib.context import CryptContext
 
-from app.models.userdb import User
-from app.schemas.usercheck import UserCreate, UserUpdate
-from app.core.security import get_password_hash
+# 密码加密上下文
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def get_password_hash(password: str) -> str:
+    """生成密码哈希"""
+    return pwd_context.hash(password)
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """验证密码"""
+    return pwd_context.verify(plain_password, hashed_password)
 
 def get_user(db: Session, user_id: int) -> Optional[User]:
     """根据ID获取用户"""
@@ -19,22 +29,17 @@ def get_user_by_email(db: Session, email: str) -> Optional[User]:
 
 def get_users(db: Session, skip: int = 0, limit: int = 100) -> List[User]:
     """获取用户列表（分页）"""
-    return db.query(User).offset(skip*limit).limit(limit).all()
+    return db.query(User).offset(skip).limit(limit).all()
 
 def create_user(db: Session, user: UserCreate) -> User:
     """创建新用户"""
-    # 密码加密
     hashed_password = get_password_hash(user.password)
-    
-    # 创建用户对象
     db_user = User(
         username=user.username,
         email=user.email,
         hashed_password=hashed_password,
         role=user.role
     )
-    
-    # 保存到数据库
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -42,22 +47,9 @@ def create_user(db: Session, user: UserCreate) -> User:
 
 def update_user(db: Session, db_user: User, user_update: UserUpdate) -> User:
     """更新用户信息"""
-    # 将更新数据转换为字典
     update_data = user_update.dict(exclude_unset=True)
-    
-    # 如果更新密码，需要加密
-    if "password" in update_data:
-        update_data["hashed_password"] = get_password_hash(update_data["password"])
-        del update_data["password"]
-    
-    # 移除user_id（不允许更新）
-    update_data.pop("user_id", None)
-    
-    # 更新字段
     for key, value in update_data.items():
         setattr(db_user, key, value)
-    
-    # 保存到数据库
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -71,3 +63,12 @@ def delete_user(db: Session, user_id: int) -> bool:
         db.commit()
         return True
     return False
+
+def authenticate_user(db: Session, username: str, password: str) -> Optional[User]:
+    """验证用户身份"""
+    user = get_user_by_username(db, username)
+    if not user:
+        return None
+    if not verify_password(password, user.hashed_password):
+        return None
+    return user

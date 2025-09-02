@@ -5,14 +5,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # 数据库配置
-DATABASE_URL = os.getenv("DATABASE_URL", "mysql+pymysql://root:xzk0422@127.0.0.1:3306/xzk")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 # API配置
-DEFAULT_HOST = os.getenv("DEFAULT_HOST", "127.0.0.1")
-DEFAULT_PORT = int(os.getenv("DEFAULT_PORT", 4222))
-API_PREFIX = os.getenv("API_PREFIX", "/api/v1")
+DEFAULT_HOST = os.getenv("DEFAULT_HOST")
+DEFAULT_PORT = int(os.getenv("DEFAULT_PORT"))
+API_PREFIX = os.getenv("API_PREFIX")
 
 # 安全配置
-SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-keep-it-safe")
+SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30  # 令牌有效期（分钟）
+ACCESS_TOKEN_EXPIRE_MINUTES = 60*12  # 令牌有效期（分钟）

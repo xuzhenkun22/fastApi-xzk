@@ -7,6 +7,12 @@ Content-Type: application/json;
   "password": "111111"
 }
 
+### 获取当前用户信息
+POST 127.0.0.1:4222/api/v1/auth/me
+Content-Type: application/json;
+Authorization: Bearer {{token}}
+
+
 ### 获取用户信息
 POST 127.0.0.1:4222/api/v1/users/list
 Content-Type: application/json;
@@ -16,3 +22,5 @@ Authorization: Bearer {{token}}
   "skip": 0,
   "limit": 5
 }
+
+

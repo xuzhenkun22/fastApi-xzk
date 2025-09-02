@@ -5,9 +5,14 @@ T = TypeVar('T')
 
 class APIResponse(BaseModel, Generic[T]):
     """统一API响应模型"""
-    code: int = 200
-    msg: str = "success"
+    success: bool = True
     data: Optional[T] = None
+
+    errorCode:int =None
+    errorMessage:str = ''
+
+    showType:int = 0
+    showMessage:str = ''
 
     class Config:
         orm_mode = True

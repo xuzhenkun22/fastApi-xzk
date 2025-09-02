@@ -16,9 +16,10 @@ async def custom_exception_handler(request: Request, exc: BusinessException):
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content={
-            "code": exc.code,
-            "msg": exc.msg,
-            "data": None
+            "errorCode": exc.code,
+            "errorMessage": exc.msg,
+            "data": None,
+	        "success": False
         }
     )
 
@@ -27,9 +28,10 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content={
-            "code": exc.status_code,
-            "msg": exc.detail,
-            "data": None
+            "errorCode": exc.status_code,
+            "errorMessage": exc.detail,
+            "data": None,
+	        "success": False
         }
     )
 
@@ -45,9 +47,10 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content={
-            "code": 400,
-            "msg": "参数验证失败",
-            "data": {"errors": errors}
+            "errorCode": 400,
+            "errorMessage": "参数验证失败："+str(errors),
+	        "data"   : None,
+	        "success": False
         }
     )
 
@@ -56,9 +59,10 @@ async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content={
-            "code": 500,
-            "msg": "数据库操作失败",
-            "data": None
+            "errorCode": 500,
+            "errorMessage": "数据库操作失败",
+            "data"   : None,
+	        "success": False
         }
     )
 
@@ -67,8 +71,9 @@ async def general_exception_handler(request: Request, exc: Exception):
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content={
-            "code": 500,
-            "msg": "服务器内部错误",
-            "data": None
+            "errorCode": 500,
+            "errorMessage": "服务器内部错误",
+            "data"   : None,
+	        "success": False
         }
     )
