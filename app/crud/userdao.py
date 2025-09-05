@@ -27,9 +27,9 @@ def get_user_by_email(db: Session, email: str) -> Optional[User]:
     """根据邮箱获取用户"""
     return db.query(User).filter(User.email == email).first()
 
-def get_users(db: Session, skip: int = 0, limit: int = 100) -> List[User]:
+def get_users(db: Session, current: int = 0, pageSize: int = 100) -> List[User]:
     """获取用户列表（分页）"""
-    return db.query(User).offset(skip).limit(limit).all()
+    return db.query(User).offset(current).limit(pageSize).all()
 
 def create_user(db: Session, user: UserCreate) -> User:
     """创建新用户"""

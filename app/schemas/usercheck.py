@@ -21,8 +21,8 @@ class UserUpdate(BaseModel):
 
 class UserQuery(BaseModel):
     """用户列表查询模型"""
-    skip: int = Field(0, ge=0, description="跳过的记录数")
-    limit: int = Field(100, ge=1, le=500, description="每页记录数（1-500）")
+    current: int = Field(0, ge=0, description="跳过的记录数")
+    pageSize: int = Field(100, ge=1, le=500, description="每页记录数（1-500）")
 
 class UserGet(BaseModel):
     """获取单个用户请求模型"""

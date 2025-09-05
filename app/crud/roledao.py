@@ -9,8 +9,8 @@ def get_role(db: Session, role_id: int) -> Optional[Role]:
 def get_role_by_name(db: Session, name: str) -> Optional[Role]:
     return db.query(Role).filter(Role.name == name).first()
 
-def get_roles(db: Session, skip: int = 0, limit: int = 100) -> List[Role]:
-    return db.query(Role).offset(skip).limit(limit).all()
+def get_roles(db: Session, current: int = 0, pageSize: int = 100) -> List[Role]:
+    return db.query(Role).offset(current).limit(pageSize).all()
 
 def create_role(db: Session, role: RoleCreate) -> Role:
     db_role = Role(name=role.name, description=role.description)
@@ -43,8 +43,8 @@ def get_permission(db: Session, permission_id: int) -> Optional[Permission]:
 def get_permission_by_code(db: Session, code: str) -> Optional[Permission]:
     return db.query(Permission).filter(Permission.code == code).first()
 
-def get_permissions(db: Session, skip: int = 0, limit: int = 100) -> List[Permission]:
-    return db.query(Permission).offset(skip).limit(limit).all()
+def get_permissions(db: Session, current: int = 0, pageSize: int = 100) -> List[Permission]:
+    return db.query(Permission).offset(current).limit(pageSize).all()
 
 def create_permission(db: Session, permission: PermissionCreate) -> Permission:
     db_perm = Permission(

@@ -19,8 +19,8 @@ Content-Type: application/json;
 Authorization: Bearer {{token}}
 
 {
-  "skip": 0,
-  "limit": 5
+  "current": 0,
+  "pageSize": 5
 }
 
 

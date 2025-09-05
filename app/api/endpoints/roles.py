@@ -17,13 +17,13 @@ router = APIRouter()
 # 角色管理
 @router.get("/roles", response_model=List[Role])
 def read_roles(
-    skip: int = 0,
-    limit: int = 100,
+    current: int = 0,
+    pageSize: int = 100,
     db: Session = Depends(get_db),
     current_user: DBUser = Depends(check_permission("role:manage"))
 ):
     """获取角色列表（需要角色管理权限）"""
-    roles = get_roles(db, skip=skip, limit=limit)
+    roles = get_roles(db, current=current, pageSize=pageSize)
     return roles
 
 @router.post("/roles", response_model=Role, status_code=status.HTTP_201_CREATED)
@@ -91,13 +91,13 @@ def delete_existing_role(
 # 权限管理
 @router.get("/permissions", response_model=List[Permission])
 def read_permissions(
-    skip: int = 0,
-    limit: int = 100,
+    current: int = 0,
+    pageSize: int = 100,
     db: Session = Depends(get_db),
     current_user: DBUser = Depends(check_permission("role:manage"))
 ):
     """获取权限列表（需要角色管理权限）"""
-    permissions = get_permissions(db, skip=skip, limit=limit)
+    permissions = get_permissions(db, current=current, pageSize=pageSize)
     return permissions
 
 @router.post("/permissions", response_model=Permission, status_code=status.HTTP_201_CREATED)
